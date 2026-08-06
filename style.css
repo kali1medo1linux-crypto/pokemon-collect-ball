@@ -1,0 +1,68 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+body {
+  background-image: url('assets/land.png');
+  background-size: cover;
+}
+
+.player {
+  width: 80px;
+  height: 100px;
+  background-image: url('assets/player_front.png');
+  background-size: 240px 100%;
+  background-position: -80px 0;
+  position: absolute;
+  z-index: 1000;
+}
+
+.player.walk {
+  animation: walk .2s step-end infinite;
+}
+
+@keyframes walk {
+  0%, 32% {
+    background-position: 0 0;
+  }
+  33%, 65% {
+    background-position: -80px 0;
+  }
+  66%, 100% {
+    background-position: -160px 0;
+  }
+}
+
+.grass {
+  width: 50px;
+  height: 50px;
+  background-image: url('assets/grass.png');
+  background-size: 100% 100%;
+  position: absolute;
+  z-index: 0;
+}
+
+.pokeball {
+  width: 30px;
+  height: 30px;
+  background-image: url('assets/pokeball.png');
+  background-size: 100% 100%;
+  position: absolute;
+  z-index: 1;
+}
+
+.gold-ball {
+  width: 35px;
+  height: 35px;
+  background-image: url('assets/gold.jpeg');
+  background-size: 100% 100%;
+  border-radius: 50%;
+  position: absolute;
+  z-index: 2;
+  box-shadow: 0 0 12px #ffd700;
+}
