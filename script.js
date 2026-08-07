@@ -1,17 +1,15 @@
-const GRASS_CLASS = "grass",
-  GRASS_COUNT = 50;
-const BALL_CLASS = "pokeball",
-  BALL_COUNT = 5;
+const GRASS_CLASS = "grass", GRASS_COUNT = 40;
+const BALL_CLASS = "pokeball", BALL_COUNT = 8;
 const GOLD_BALL_CLASS = "gold-ball";
 
 const PLAYER = document.querySelector(".player");
 let playerPos = { x: 0, y: 0 };
 let playerVel = { x: 0, y: 0 };
-const PLAYER_SPEED = 3;
-const BALL_GATHER_SPEED = 5;
 
+let baseSpeed = 3;
 let score = 0;
-let scoreElement;
+
+const BALL_GATHER_SPEED = 7;
 
 const SOUND = new Audio("assets/coin.mp3");
 
@@ -19,28 +17,7 @@ const keysPressed = new Set();
 let canSpawnBalls = true;
 let canSpawnGoldBall = true;
 
-function createScoreDisplay() {
-  scoreElement = document.createElement("div");
-  scoreElement.style.position = "fixed";
-  scoreElement.style.top = "20px";
-  scoreElement.style.left = "20px";
-  scoreElement.style.fontSize = "24px";
-  scoreElement.style.fontWeight = "bold";
-  scoreElement.style.color = "#ffffff";
-  scoreElement.style.fontFamily = "sans-serif";
-  scoreElement.style.textShadow = "2px 2px 4px #000000";
-  scoreElement.style.zIndex = "1000";
-  scoreElement.innerText = "Score: 0";
-  document.body.appendChild(scoreElement);
-}
-
-function updateScore(amount) {
-  score += amount;
-  scoreElement.innerText = "Score: " + score;
-}
-
 function start() {
-  createScoreDisplay();
   generateRandomElements(GRASS_CLASS, GRASS_COUNT);
   generateRandomElements(BALL_CLASS, BALL_COUNT);
 
@@ -51,6 +28,15 @@ function start() {
     x: (window.innerWidth - playerWidth) / 2,
     y: (window.innerHeight - playerHeight) / 2,
   };
+
+  setupTouchControls();
+}
+
+function updateScoreUI(amount) {
+  score += amount;
+  if (score < 0) score = 0;
+
+  document.querySelector("#score span").innerText = score;
 }
 
 function update() {
@@ -69,12 +55,14 @@ function update() {
   PLAYER.style.left = playerPos.x + "px";
   PLAYER.style.top = playerPos.y + "px";
 
+
   if (keysPressed.has("c")) {
     gatherBallsToPlayer();
   }
 
+
   if (keysPressed.has("m") && canSpawnBalls) {
-    generateRandomElements(BALL_CLASS, 100);
+    generateRandomElements(BALL_CLASS, 30, true);
     canSpawnBalls = false;
   }
 
@@ -97,15 +85,48 @@ window.addEventListener("keyup", (e) => {
   const keyReleased = e.key.toLowerCase();
   keysPressed.delete(keyReleased);
 
-  if (keyReleased === "m") {
-    canSpawnBalls = true;
-  }
-  if (keyReleased === "g") {
-    canSpawnGoldBall = true;
-  }
+  if (keyReleased === "m") canSpawnBalls = true;
+  if (keyReleased === "g") canSpawnGoldBall = true;
 
   updatePlayerMovement();
 });
+
+function bindTouchButton(element, keyName) {
+  if (!element) return;
+
+  const handleStart = (e) => {
+    e.preventDefault();
+    keysPressed.add(keyName);
+    updatePlayerMovement();
+  };
+
+  const handleEnd = (e) => {
+    e.preventDefault();
+    keysPressed.delete(keyName);
+    if (keyName === "m") canSpawnBalls = true;
+    if (keyName === "g") canSpawnGoldBall = true;
+    updatePlayerMovement();
+  };
+
+  element.addEventListener("touchstart", handleStart, { passive: false });
+  element.addEventListener("touchend", handleEnd, { passive: false });
+  element.addEventListener("mousedown", handleStart);
+  element.addEventListener("mouseup", handleEnd);
+}
+
+function setupTouchControls() {
+  bindTouchButton(document.getElementById("btn-up"), "arrowup");
+  bindTouchButton(document.getElementById("btn-down"), "arrowdown");
+  bindTouchButton(document.getElementById("btn-left"), "arrowleft");
+  bindTouchButton(document.getElementById("btn-right"), "arrowright");
+
+
+  const keys = document.querySelectorAll("#cheat-keyboard .key-btn");
+  keys.forEach((keyBtn) => {
+    const key = keyBtn.getAttribute("data-key");
+    bindTouchButton(keyBtn, key);
+  });
+}
 
 function updatePlayerMovement() {
   let moveX = 0;
@@ -135,8 +156,8 @@ function updatePlayerMovement() {
     moveY *= 0.7071;
   }
 
-  const speedMultiplier = keysPressed.has("r") ? 5 : 1;
-  const currentSpeed = PLAYER_SPEED * speedMultiplier;
+  const speedBoost = keysPressed.has("r") ? 2 : 1;
+  const currentSpeed = baseSpeed * speedBoost;
 
   playerVel.x = moveX * currentSpeed;
   playerVel.y = moveY * currentSpeed;
@@ -170,17 +191,17 @@ function gatherBallsToPlayer() {
 
       ball.style.left = rect.left + stepX + "px";
       ball.style.top = rect.top + stepY + "px";
-    } else {
-      ball.style.left = targetX - rect.width / 2 + "px";
-      ball.style.top = targetY - rect.height / 2 + "px";
     }
   });
 }
 
-function generateRandomElements(className, elementCount) {
+function generateRandomElements(className, elementCount, isExtra = false) {
   for (let count = 0; count < elementCount; count++) {
     const newElement = document.createElement("div");
     newElement.classList.add(className);
+    if (isExtra) {
+      newElement.classList.add("extra-ball");
+    }
     newElement.style.left = Math.random() * 85 + "%";
     newElement.style.top = Math.random() * 85 + "%";
     document.body.appendChild(newElement);
@@ -188,27 +209,27 @@ function generateRandomElements(className, elementCount) {
 }
 
 function checkCollisions() {
-
-  const balls = document.querySelectorAll(".pokeball");
-  balls.forEach((ball) => {
+  document.querySelectorAll(".pokeball").forEach((ball) => {
     if (collision(ball, PLAYER)) {
-      updateScore(1);
+      updateScoreUI(10);
 
-      if (document.querySelectorAll(".pokeball").length > BALL_COUNT) {
+
+      if (ball.classList.contains("extra-ball")) {
         ball.remove();
       } else {
+
         ball.style.left = Math.random() * 85 + "%";
         ball.style.top = Math.random() * 85 + "%";
       }
+
       SOUND.currentTime = 0;
       SOUND.play().catch(() => {});
     }
   });
 
-  const goldBalls = document.querySelectorAll(".gold-ball");
-  goldBalls.forEach((goldBall) => {
+  document.querySelectorAll(".gold-ball").forEach((goldBall) => {
     if (collision(goldBall, PLAYER)) {
-      updateScore(500);
+      updateScoreUI(500);
       goldBall.remove();
       SOUND.currentTime = 0;
       SOUND.play().catch(() => {});

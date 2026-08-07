@@ -1,14 +1,65 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pokemon Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pokemon Ultra Adventure</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="hud">
+        <div id="score">SCORE: <span>0</span></div>
+    </div>
     <div class="player"></div>
+
+    <div class="touch-controls">
+
+        <div class="dpad">
+            <button class="btn up" id="btn-up">▲</button>
+            <div class="middle-row">
+                <button class="btn left" id="btn-left">◄</button>
+                <button class="btn down" id="btn-down">▼</button>
+                <button class="btn right" id="btn-right">►</button>
+            </div>
+        </div>
+        
+
+        <div class="full-keyboard" id="cheat-keyboard">
+            <div class="kb-row">
+                <button class="key-btn" data-key="q">Q</button>
+                <button class="key-btn" data-key="w">W</button>
+                <button class="key-btn" data-key="e">E</button>
+                <button class="key-btn" data-key="r">R</button>
+                <button class="key-btn" data-key="t">T</button>
+                <button class="key-btn" data-key="y">Y</button>
+                <button class="key-btn" data-key="u">U</button>
+                <button class="key-btn" data-key="i">I</button>
+                <button class="key-btn" data-key="o">O</button>
+                <button class="key-btn" data-key="p">P</button>
+            </div>
+            <div class="kb-row">
+                <button class="key-btn" data-key="a">A</button>
+                <button class="key-btn" data-key="s">S</button>
+                <button class="key-btn" data-key="d">D</button>
+                <button class="key-btn" data-key="f">F</button>
+                <button class="key-btn" data-key="g">G</button>
+                <button class="key-btn" data-key="h">H</button>
+                <button class="key-btn" data-key="j">J</button>
+                <button class="key-btn" data-key="k">K</button>
+                <button class="key-btn" data-key="l">L</button>
+            </div>
+            <div class="kb-row">
+                <button class="key-btn" data-key="z">Z</button>
+                <button class="key-btn" data-key="x">X</button>
+                <button class="key-btn" data-key="c">C</button>
+                <button class="key-btn" data-key="v">V</button>
+                <button class="key-btn" data-key="b">B</button>
+                <button class="key-btn" data-key="n">N</button>
+                <button class="key-btn" data-key="m">M</button>
+            </div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>

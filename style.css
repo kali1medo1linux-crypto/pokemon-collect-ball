@@ -5,12 +5,40 @@ html, body {
   height: 100vh;
   overflow: hidden;
   position: relative;
+  font-family: 'Arial Black', Gadget, sans-serif;
+  user-select: none;
+  touch-action: manipulation;
 }
 
 body {
   background-image: url('assets/land.png');
   background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
+
+.hud {
+  position: fixed;
+  top: 15px;
+  left: 20px;
+  display: flex;
+  gap: 20px;
+  z-index: 2000;
+}
+
+#score {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 14px;
+  font-size: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+#score span { color: #ffcb05; }
 
 .player {
   width: 80px;
@@ -20,6 +48,8 @@ body {
   background-position: -80px 0;
   position: absolute;
   z-index: 1000;
+  filter: drop-shadow(0 8px 6px rgba(0,0,0,0.4));
+  transition: transform 0.1s ease;
 }
 
 .player.walk {
@@ -27,15 +57,9 @@ body {
 }
 
 @keyframes walk {
-  0%, 32% {
-    background-position: 0 0;
-  }
-  33%, 65% {
-    background-position: -80px 0;
-  }
-  66%, 100% {
-    background-position: -160px 0;
-  }
+  0%, 32% { background-position: 0 0; }
+  33%, 65% { background-position: -80px 0; }
+  66%, 100% { background-position: -160px 0; }
 }
 
 .grass {
@@ -48,21 +72,166 @@ body {
 }
 
 .pokeball {
-  width: 30px;
-  height: 30px;
+  width: 35px;
+  height: 35px;
   background-image: url('assets/pokeball.png');
   background-size: 100% 100%;
   position: absolute;
   z-index: 1;
+  animation: pulse 1.5s infinite alternate;
 }
 
 .gold-ball {
-  width: 35px;
-  height: 35px;
+  width: 45px;
+  height: 45px;
   background-image: url('assets/gold.jpeg');
   background-size: 100% 100%;
   border-radius: 50%;
   position: absolute;
   z-index: 2;
-  box-shadow: 0 0 12px #ffd700;
+  box-shadow: 0 0 20px #ffd700, 0 0 40px #ff8c00;
+  animation: float 1s infinite alternate, spin 3s linear infinite;
+}
+
+.touch-controls {
+  position: fixed;
+  bottom: 15px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 0 20px;
+  z-index: 3000;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+.dpad, .full-keyboard {
+  pointer-events: auto;
+}
+
+.dpad {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.middle-row {
+  display: flex;
+  gap: 8px;
+}
+
+.btn {
+  width: 55px;
+  height: 55px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 50%;
+  font-size: 20px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+  touch-action: manipulation;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.3), inset 0 1px 2px rgba(255,255,255,0.5);
+  transition: all 0.15s ease;
+}
+
+.btn:active {
+  background: rgba(255, 203, 5, 0.6);
+  border-color: rgba(255, 203, 5, 0.9);
+  transform: scale(0.94);
+}
+
+
+.full-keyboard {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  max-width: 280px; 
+  padding: 8px; 
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(14px) saturate(180%);
+  -webkit-backdrop-filter: blur(14px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 10px 25px rgba(0, 0, 0, 0.3),
+    inset 0 1px 1px rgba(255, 255, 255, 0.5);
+  user-select: none;
+  box-sizing: border-box;
+}
+
+.kb-row {
+  display: flex;
+  justify-content: center;
+  gap: 3px;
+  width: 100%;
+}
+
+.key-btn {
+  flex: 1;
+  height: 28px; 
+  min-width: 0;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 11px; 
+  font-weight: bold;
+  font-family: inherit;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  touch-action: manipulation;
+  cursor: pointer;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5);
+  transition: background 0.12s ease, transform 0.08s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.key-btn:active {
+  background: rgba(255, 255, 255, 0.45);
+  border-color: rgba(255, 255, 255, 0.7);
+  transform: translateY(1px) scale(0.95);
+}
+
+@media (min-width: 768px) {
+  .btn {
+    width: 65px;
+    height: 65px;
+    font-size: 24px;
+  }
+
+  .full-keyboard {
+    max-width: 360px; 
+    padding: 10px;
+    gap: 5px;
+    border-radius: 18px;
+  }
+
+  .key-btn {
+    height: 34px;
+    font-size: 13px;
+    border-radius: 8px;
+  }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.1); }
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  100% { transform: translateY(-10px); }
 }
